@@ -2,9 +2,13 @@ package com.example.demo.service;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -16,11 +20,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.contants.AppConstants;
 import com.example.demo.exception.ErrorHandler;
-import com.example.demo.model.DeptDetails;
+import com.example.demo.entity.DeptDetails;
 import com.example.demo.repository.DeptDetailsDAO;
 import com.example.demo.utils.CommonUtils;
 import com.example.demo.utils.DateUtils;
@@ -83,11 +88,57 @@ public class DeptDetailsServiceImpl implements DeptDetailsService {
 		return isValidFileExtension;
 	}
 
-	@SuppressWarnings({ "finally", "resource" })
-	@Override
-	public boolean saveDeptMaster(String fileName, FileInputStream fileInstance) {
+//	@Override
+//	public boolean saveDeptMaster(String fileName, FileInputStream fileInstance) {
+//		boolean fileProcessed = false;
+//		logger.info("saveDeptPurposeCodeMasterData() :: Processing File : " + fileName);
+//		ExecutorService executorService = Executors.newFixedThreadPool(10);
+//
+//		try {
+//			Sheet sheet;
+//			String fileExt = FilenameUtils.getExtension(fileName);
+//			if (fileExt.equalsIgnoreCase(AppConstants.XLS_EXTENSION)) {
+//				HSSFWorkbook workbook = new HSSFWorkbook(fileInstance);
+//				sheet = workbook.getSheetAt(0);
+//			} else {
+//				XSSFWorkbook workbook = new XSSFWorkbook(fileInstance);
+//				sheet = workbook.getSheetAt(0);
+//			}
+//			int totalRows = sheet.getPhysicalNumberOfRows();
+//			for (int currentRowInExcel = 1; currentRowInExcel < totalRows; currentRowInExcel++) {
+//				Row row = sheet.getRow(currentRowInExcel);
+//				executorService.submit(() -> {
+//					try {
+//						DeptDetails deptDetailsInst = new DeptDetails();
+//						int colIdx = 0;
+//						deptDetailsInst.setUserId(CommonUtils.getUpperStringFromExcelCell(row.getCell(colIdx++)));
+//						deptDetailsInst.setDeptId(CommonUtils.getUpperStringFromExcelCell(row.getCell(colIdx++)));
+//						deptDetailsInst.setDeptName(CommonUtils.getUpperStringFromExcelCell(row.getCell(colIdx++)));
+//						deptDetailsInst.setDeptDesc(CommonUtils.getUpperStringFromExcelCell(row.getCell(colIdx++)));
+//						deptDetailsInst.setCreatedDate(DateUtils.getDateFromString(CommonUtils.getUpperStringFromExcelCell(row.getCell(colIdx++)), "dd-MM-yyyy"));
+//						deptDetailsDAO.save(deptDetailsInst);
+//					} catch (Exception e) {
+//						logger.error(ErrorHandler.getErrorMessageLog(new Object() { }.getClass(), e));
+//					}
+//				});
+//			}
+//			executorService.shutdown();
+//			executorService.awaitTermination(1, TimeUnit.HOURS); // Adjust timeout as needed
+//			fileProcessed = true;
+//		} catch (Exception e) {
+//			logger.error(ErrorHandler.getErrorMessageLog(new Object() { }.getClass(), e));
+//		} finally {
+//			return fileProcessed;
+//		}
+//	}
+
+	@Transactional
+	public boolean saveDeptMaster() throws IOException {
 		boolean fileProcessed = false;
-		logger.info("saveDeptPurposeCodeMasterData() :: Processing File : " + fileName);
+		String fileName = "departments.xlsx";
+		String filePath = "C:\\Users\\Asus\\OneDrive\\Desktop";
+//		ExecutorService executorService = Executors.newFixedThreadPool(10);
+		FileInputStream fileInstance = new FileInputStream(new File(filePath + File.separator + fileName));
 		try {
 			Sheet sheet;
 			String fileExt = FilenameUtils.getExtension(fileName);
@@ -98,25 +149,32 @@ public class DeptDetailsServiceImpl implements DeptDetailsService {
 				XSSFWorkbook workbook = new XSSFWorkbook(fileInstance);
 				sheet = workbook.getSheetAt(0);
 			}
-			Row row = sheet.getRow(0);
-			int currentRowInExcel = 0;
-			for (currentRowInExcel = 1; currentRowInExcel < sheet.getPhysicalNumberOfRows(); currentRowInExcel++) {
-				row = sheet.getRow(currentRowInExcel);
+			int totalRows = sheet.getPhysicalNumberOfRows();
+			for (int currentRowInExcel = 1; currentRowInExcel < totalRows; currentRowInExcel++) {
+				Row row = sheet.getRow(currentRowInExcel);
+//				executorService.submit(() -> {
 				DeptDetails deptDetailsInst = new DeptDetails();
 				int colIdx = 0;
 				deptDetailsInst.setUserId(CommonUtils.getUpperStringFromExcelCell(row.getCell(colIdx++)));
 				deptDetailsInst.setDeptId(CommonUtils.getUpperStringFromExcelCell(row.getCell(colIdx++)));
 				deptDetailsInst.setDeptName(CommonUtils.getUpperStringFromExcelCell(row.getCell(colIdx++)));
 				deptDetailsInst.setDeptDesc(CommonUtils.getUpperStringFromExcelCell(row.getCell(colIdx++)));
-				deptDetailsInst.setCreatedDate(DateUtils.getDateFromString(
-						CommonUtils.getUpperStringFromExcelCell(row.getCell(colIdx++)), "dd/MM/yyyy"));
+//						deptDetailsInst.setCreatedDate(DateUtils.getDateFromString(CommonUtils.getUpperStringFromExcelCell(row.getCell(colIdx++)), "yyyy,dd,MM"));
 				deptDetailsDAO.save(deptDetailsInst);
-				fileProcessed = true;
+				if (deptDetailsInst.getId() == 391) {
+					System.out.println("Runtime Exception Thrown While Saving Data");
+					throw new RuntimeException("Runtime Exception Thrown While Saving Data");
+				}
+//				});
 			}
-		} catch (Exception e) {
-			logger.error(ErrorHandler.getErrorMessageLog(new Object() {
-			}.getClass(), e));
-		} finally {
+//			executorService.shutdown();
+//			executorService.awaitTermination(1, TimeUnit.HOURS); // Adjust timeout as needed
+			fileProcessed = true;
+		}
+		catch (RuntimeException e) {
+			throw new RuntimeException("Runtime Exception Thrown While Saving Data Inside Catch Block");
+		}
+		finally {
 			return fileProcessed;
 		}
 	}

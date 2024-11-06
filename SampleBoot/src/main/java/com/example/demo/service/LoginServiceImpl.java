@@ -9,9 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.contants.AppConstants;
-import com.example.demo.model.LoginTracker;
-import com.example.demo.model.UserDetails;
-import com.example.demo.model.UserSession;
+import com.example.demo.entity.LoginTracker;
+import com.example.demo.entity.UserDetails;
+import com.example.demo.entity.UserSession;
 import com.example.demo.repository.LoginTrackerDAO;
 import com.example.demo.repository.UserDetailsDAO;
 import com.example.demo.repository.UserSessionDAO;

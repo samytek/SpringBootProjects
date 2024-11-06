@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.DTO.EmployeeDTO;
-import com.example.demo.model.Employee;
+import com.example.demo.entity.Employee;
 import com.example.demo.populator.EmployeePopulator;
 import com.example.demo.repository.EmployeeRepo;
 

@@ -3,7 +3,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.example.demo.model.UserDetails;
+import com.example.demo.entity.UserDetails;
 
 public interface UserDetailsDAO extends JpaRepository<UserDetails, Long> {
 	

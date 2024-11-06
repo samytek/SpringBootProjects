@@ -11,9 +11,9 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.contants.AppConstants;
 import com.example.demo.exception.ErrorHandler;
-import com.example.demo.model.RoleMaster;
-import com.example.demo.model.UserDetails;
-import com.example.demo.model.UserRoles;
+import com.example.demo.entity.RoleMaster;
+import com.example.demo.entity.UserDetails;
+import com.example.demo.entity.UserRoles;
 import com.example.demo.repository.RoleMasterDAO;
 import com.example.demo.repository.UserDetailsDAO;
 import com.example.demo.repository.UserRolesDAO;

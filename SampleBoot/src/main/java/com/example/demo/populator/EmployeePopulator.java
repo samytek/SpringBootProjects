@@ -5,7 +5,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 import com.example.demo.DTO.EmployeeDTO;
-import com.example.demo.model.Employee;
+import com.example.demo.entity.Employee;
 
 @Mapper
 public interface EmployeePopulator {
@@ -14,6 +14,6 @@ public interface EmployeePopulator {
 
 	EmployeeDTO userToUserDTO(Employee user);
 
-	@Mapping(target = "id", ignore = true)
+//	@Mapping(target = "id", ignore = true)
 	Employee populateEmployee(EmployeeDTO userDTO);
 }

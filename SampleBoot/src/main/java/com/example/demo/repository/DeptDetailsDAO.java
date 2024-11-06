@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.example.demo.model.DeptDetails;
+import com.example.demo.entity.DeptDetails;
 
 public interface DeptDetailsDAO extends JpaRepository<DeptDetails, Long> {
 	

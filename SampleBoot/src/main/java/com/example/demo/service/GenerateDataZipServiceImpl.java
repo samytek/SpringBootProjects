@@ -22,9 +22,9 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.contants.AppConstants;
 import com.example.demo.exception.ErrorHandler;
-import com.example.demo.model.AppCommonConstants;
-import com.example.demo.model.DeptDetails;
-import com.example.demo.model.UserDetails;
+import com.example.demo.entity.AppCommonConstants;
+import com.example.demo.entity.DeptDetails;
+import com.example.demo.entity.UserDetails;
 import com.example.demo.repository.AppConstantsDAO;
 import com.example.demo.repository.DeptDetailsDAO;
 import com.example.demo.repository.UserDetailsDAO;

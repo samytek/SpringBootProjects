@@ -2,7 +2,6 @@ package com.example.demo.service;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.Base64;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
@@ -16,7 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.contants.AppConstants;
 import com.example.demo.exception.ErrorHandler;
-import com.example.demo.model.UserDetails;
+import com.example.demo.entity.UserDetails;
 import com.example.demo.repository.UserDetailsDAO;
 import com.example.demo.utils.CommonUtils;
 

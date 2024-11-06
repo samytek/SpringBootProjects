@@ -41,7 +41,7 @@ public class DataProcessServiceImpl implements DataProcessService {
 				FileInputStream fileInstance = new FileInputStream(new File(filePath + fileName));
 				switch (moduleType.toUpperCase()) {
 						case AppConstants.USER	 : fileProcessed = userDetailsService.saveUserMaster(absoluteFileName,fileInstance); break;
-						case AppConstants.DEPT	 : fileProcessed = deptDetailsService.saveDeptMaster(absoluteFileName,fileInstance); break;
+//						case AppConstants.DEPT	 : fileProcessed = deptDetailsService.saveDeptMaster(absoluteFileName,fileInstance); break;
 				default:
 					break;
 				}

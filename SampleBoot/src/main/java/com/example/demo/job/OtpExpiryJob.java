@@ -1,18 +1,13 @@
 package com.example.demo.job;
 
-import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 
 import com.example.demo.contants.AppConstants;
-import com.example.demo.exception.ErrorHandler;
-import com.example.demo.model.EmailOtpTracker;
+import com.example.demo.entity.EmailOtpTracker;
 import com.example.demo.repository.EmailOtpTrackerDAO;
 
 //@Configuration

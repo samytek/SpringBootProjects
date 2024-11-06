@@ -2,8 +2,6 @@ package com.example.demo.service;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -17,9 +15,9 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.contants.AppConstants;
 import com.example.demo.exception.ErrorHandler;
-import com.example.demo.model.DeptDetails;
-import com.example.demo.model.FileDataTracker;
-import com.example.demo.model.UserDetails;
+import com.example.demo.entity.DeptDetails;
+import com.example.demo.entity.FileDataTracker;
+import com.example.demo.entity.UserDetails;
 import com.example.demo.repository.DeptDetailsDAO;
 import com.example.demo.repository.FileDataTrackerDAO;
 import com.example.demo.repository.UserDetailsDAO;

@@ -2,7 +2,7 @@ package com.example.demo.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.example.demo.model.UserSession;
+import com.example.demo.entity.UserSession;
 
 public interface UserSessionDAO extends JpaRepository<UserSession, Long> {
 	
