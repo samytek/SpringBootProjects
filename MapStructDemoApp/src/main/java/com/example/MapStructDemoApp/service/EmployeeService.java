@@ -18,7 +18,7 @@ public class EmployeeService {
     @Autowired
     EmployeePopulate employeePopulate;
 
-    public List<Employee> getAllEMployees() {
+    public List<Employee> getAllEmployees() {
         return employeeRepository.findAll();
     }
 

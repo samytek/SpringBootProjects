@@ -7,4 +7,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
 
+    Employee findByName(String name);
+    Employee findByDeptName(String deptName);
+    Employee findByDeptNameAndName(String deptName, String name);
 }

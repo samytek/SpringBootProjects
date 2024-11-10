@@ -1,6 +1,5 @@
 package com.example.MapStructDemoApp.entity;
 
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,6 +22,9 @@ public class Employee {
 
     @Column(name = "name")
     private String name;
+
+    @Column(name = "deptName")
+    private String deptName;
 
     @Column(name = "age")
     private int age;
