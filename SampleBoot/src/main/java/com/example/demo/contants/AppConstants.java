@@ -63,4 +63,5 @@ public class AppConstants {
 	
 	public static final long OTP_VALID_DURATION = 5 * 60 * 1000;
 
+	public static final String DD_MM_YY_H_MM_SS_A = "DD-MM-YY_H:MM:SS_A";
 }
