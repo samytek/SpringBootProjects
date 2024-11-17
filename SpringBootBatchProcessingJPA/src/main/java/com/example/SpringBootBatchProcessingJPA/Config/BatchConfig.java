@@ -10,6 +10,7 @@ import org.springframework.batch.core.configuration.annotation.EnableBatchProces
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
+import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.data.RepositoryItemWriter;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.LineMapper;
@@ -23,12 +24,16 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.DefaultTransactionAttribute;
 
 import java.io.File;
 
 @Configuration
 @EnableBatchProcessing
-@AllArgsConstructor
 public class BatchConfig {
 
     @Autowired
@@ -38,9 +43,14 @@ public class BatchConfig {
     private EntityManagerFactory entityManagerFactory;
 
     @Bean
+    public JpaTransactionManager transactionManager() {
+        return new JpaTransactionManager(entityManagerFactory);
+    }
+
+    @Bean
     public FlatFileItemReader<Employees> reader() {
         FlatFileItemReader<Employees> itemReader = new FlatFileItemReader<>();
-        File file = new File("C:/Users/Asus/OneDrive/Desktop/employees2.csv");
+        File file = new File("C:/Users/Asus/OneDrive/Desktop/Updated_Emp_Data.csv");
         itemReader.setResource(new FileSystemResource(file));
         itemReader.setName("csvReader");
         itemReader.setLinesToSkip(1);
@@ -78,8 +88,8 @@ public class BatchConfig {
     }
 
     @Bean
-    public Step steps(JobRepository jobRepository) {
-        return new StepBuilder("jobStep", jobRepository).<Employees, Employees>chunk(10, new JpaTransactionManager(entityManagerFactory))
+    public Step steps(JobRepository jobRepository, JpaTransactionManager transactionManager) {
+        return new StepBuilder("jobStep", jobRepository).<Employees, Employees>chunk(10, transactionManager)
                 .reader(reader())
                 .processor(processor())
                 .writer(writer())
