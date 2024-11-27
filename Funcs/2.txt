@@ -267,3 +267,93 @@ select:focus {
     console.log('Submitted Data:', formData);
     this.closeModal();
   }
+  
+import { Component } from '@angular/core';
+import { TempSideService } from './temp-side.service'; // Adjust the path as per your project structure
+
+@Component({
+  selector: 'app-temp-side',
+  templateUrl: './temp-side.component.html',
+  styleUrls: ['./temp-side.component.css']
+})
+export class TempSideComponent {
+  selectedOption: string | null = null;
+  startDate: string | null = null;
+  endDate: string | null = null;
+
+  // Sample dropdown options
+  dropdownOptions = [
+    { id: '1', name: 'Option 1' },
+    { id: '2', name: 'Option 2' },
+    { id: '3', name: 'Option 3' }
+  ];
+
+  constructor(private tempSideService: TempSideService) {}
+
+  isSubmitDisabled(): boolean {
+    return !(this.selectedOption && this.startDate && this.endDate);
+  }
+
+  onSubmit() {
+    const requestData = {
+      userId: 123, // This can be dynamically set as required
+      currentSideId: parseInt(this.selectedOption!, 10),
+      tempSiteId: 789, // Replace with actual logic if dynamic
+      startDate: this.startDate,
+      endDate: this.endDate
+    };
+
+    this.tempSideService.testTempSide(requestData).subscribe(
+      (response) => {
+        console.log('Response from API:', response);
+        alert('Data submitted successfully!');
+      },
+      (error) => {
+        console.error('Error from API:', error);
+        alert('Failed to submit data. Please try again.');
+      }
+    );
+  }
+}
+
+
+  
+  import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class TempSideService {
+
+  private apiUrl = 'http://your-backend-api.com/testTempSide'; // Replace with your API endpoint
+
+  constructor(private http: HttpClient) {}
+
+  testTempSide(data: { userId: number; currentSideId: number; tempSiteId: number; startDate: string; endDate: string }): Observable<any> {
+    return this.http.post<any>(this.apiUrl, data);
+  }
+}
+
+<div>
+  <label for="dropdown">Select Option:</label>
+  <select id="dropdown" [(ngModel)]="selectedOption">
+    <option value="" disabled selected>Select an option</option>
+    <option *ngFor="let option of dropdownOptions" [value]="option.id">{{ option.name }}</option>
+  </select>
+</div>
+
+<div>
+  <label for="startDate">Start Date:</label>
+  <input id="startDate" type="date" [(ngModel)]="startDate" />
+</div>
+
+<div>
+  <label for="endDate">End Date:</label>
+  <input id="endDate" type="date" [(ngModel)]="endDate" />
+</div>
+
+<div>
+  <button [disabled]="isSubmitDisabled()" (click)="onSubmit()">Submit</button>
+</div>
