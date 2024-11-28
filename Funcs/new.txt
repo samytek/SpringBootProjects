@@ -10,9 +10,12 @@ public class UserService {
             throw new IllegalArgumentException("End date must be after start date.");
         }
 
-        // Fetch the user from the repository
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        // Fetch the user from the repository or create a new instance if not found
+        User user = userRepository.findById(userId).orElseGet(() -> {
+            User newUser = new User();
+            newUser.setId(userId); // Set the userId for the new record
+            return newUser;
+        });
 
         // Update user fields based on the logic
         if (temporarySite == null || temporarySite.isBlank()) {
@@ -31,10 +34,11 @@ public class UserService {
             user.setEndDate(endDate);
         }
 
-        // Save updated user to the repository
+        // Save updated or new user to the repository
         return userRepository.save(user);
     }
 }
+
 
 public void resetSiteIfExpired() {
     List<User> users = userRepository.findAll();
