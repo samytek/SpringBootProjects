@@ -357,3 +357,59 @@ export class TempSideService {
 <div>
   <button [disabled]="isSubmitDisabled()" (click)="onSubmit()">Submit</button>
 </div>
+
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+  fromDate: string;
+  toDate: string;
+  errorMessage: string;
+
+  validateDates(): void {
+    const today = this.formatDate(new Date()); // Get today's date in 'DD-MM-YYYY' format
+    this.errorMessage = '';
+
+    // Ensure fromDate is not in the past
+    if (this.fromDate && this.compareDates(this.fromDate, today) < 0) {
+      this.errorMessage = 'From Date cannot be in the past.';
+      this.fromDate = null; // Reset invalid date
+    }
+
+    // Ensure toDate is not in the past
+    if (this.toDate && this.compareDates(this.toDate, today) < 0) {
+      this.errorMessage = 'To Date cannot be in the past.';
+      this.toDate = null; // Reset invalid date
+    }
+
+    // Ensure fromDate is not greater than toDate
+    if (this.fromDate && this.toDate && this.compareDates(this.fromDate, this.toDate) > 0) {
+      this.errorMessage = 'From Date cannot be greater than To Date.';
+      this.fromDate = null; // Reset invalid From Date
+    }
+  }
+
+  // Helper method to format a Date object to 'DD-MM-YYYY'
+  private formatDate(date: Date): string {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  }
+
+  // Helper method to compare two dates in 'DD-MM-YYYY' format
+  private compareDates(date1: string, date2: string): number {
+    const [d1, m1, y1] = date1.split('-').map(Number);
+    const [d2, m2, y2] = date2.split('-').map(Number);
+
+    const formattedDate1 = new Date(y1, m1 - 1, d1).getTime();
+    const formattedDate2 = new Date(y2, m2 - 1, d2).getTime();
+
+    return formattedDate1 - formattedDate2;
+  }
+}
+
