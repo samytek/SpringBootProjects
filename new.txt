@@ -227,3 +227,12 @@ class UserServiceTest {
         Mockito.verify(userRepository, Mockito.never()).save(user2);
     }
 }
+ngOnInit() {
+    // Set the `minDate` property to today's date in `YYYY-MM-DD` format
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0'); // Add leading zero if needed
+    const day = String(today.getDate()).padStart(2, '0'); // Add leading zero if needed
+    this.minDate = `${year}-${month}-${day}`;
+  }
+}
