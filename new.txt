@@ -236,3 +236,36 @@ ngOnInit() {
     this.minDate = `${year}-${month}-${day}`;
   }
 }
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+
+public class DateConverter {
+
+    public static LocalDateTime convertToLocalDateTime(String dateString) throws Exception {
+        try {
+            // Define the formatter for the input date format
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            
+            // Parse the string into a LocalDate
+            LocalDate localDate = LocalDate.parse(dateString, formatter);
+            
+            // Convert LocalDate to LocalDateTime at the start of the day
+            return localDate.atStartOfDay();
+        } catch (DateTimeParseException e) {
+            throw new Exception("Error parsing date string: " + dateString + " with format: yyyy-MM-dd", e);
+        }
+    }
+
+    public static void main(String[] args) {
+        try {
+            String dateString = "2024-11-29"; // Input date string
+            LocalDateTime localDateTime = convertToLocalDateTime(dateString);
+            System.out.println("Converted LocalDateTime: " + localDateTime);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+    }
+}
