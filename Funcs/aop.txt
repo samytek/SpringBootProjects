@@ -1,0 +1,28 @@
+package com.example.aspect;
+
+import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.springframework.stereotype.Component;
+
+@Aspect
+@Component
+public class LoggingAspect {
+
+    private long startTime;
+
+    @Before("execution(* com.example.service.MyService.performTask(..))")
+    public void logStartTime() {
+        startTime = System.currentTimeMillis();
+        System.out.println("Start time: " + startTime);
+    }
+
+    @After("execution(* com.example.service.MyService.performTask(..))")
+    public void logEndTime() {
+        long endTime = System.currentTimeMillis();
+        System.out.println("End time: " + endTime);
+        System.out.println("Duration: " + (endTime - startTime) + " ms");
+    }
+}
+
+
