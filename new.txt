@@ -1,4 +1,4 @@
-@Service
+okie@Service
 public class UserService {
 
     @Autowired
@@ -267,5 +267,31 @@ public class DateConverter {
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
+    }
+}
+
+@Service
+public class UserService {
+
+    @Autowired
+    private UserRepository userRepository;
+
+    public UserResponseDTO getActiveSites(Long userId) {
+        // Fetch the user from the repository
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Prepare the response DTO
+        UserResponseDTO responseDTO = new UserResponseDTO();
+        responseDTO.setId(user.getId());
+
+        // Check which site is active and include only the active one
+        if (user.isIscurrentSiteActive()) {
+            responseDTO.setActiveSite(user.getCurrentSite());
+        } else if (user.isIstemporarySiteActive()) {
+            responseDTO.setActiveSite(user.getTemporarySite());
+        }
+
+        return responseDTO;
     }
 }
