@@ -1,0 +1,21 @@
+<div>
+    <label for="email">Enter Email:</label>{{emailId}}
+    <input 
+      id="email" 
+      type="email" 
+      [(ngModel)]="emailId" 
+      (ngModelChange)="onEmailChange()"
+      placeholder="Enter your email"
+    />
+    <div *ngIf="isInvalidEmail" style="color: red;">
+      Invalid email. Please use a labcorp.com email address.
+    </div>
+  </div>
+  
+  emailId: string = '';
+  isInvalidEmail: boolean = false;
+
+  onEmailChange() {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@labcorp\.com$/;
+    this.isInvalidEmail = !emailRegex.test(this.emailId);
+  }

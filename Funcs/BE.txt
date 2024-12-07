@@ -1,0 +1,431 @@
+package com.example.entity;
+
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "groups")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Group {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "group_id")
+    private int groupId;
+
+    @Column(name = "group_name", nullable = false, unique = true)
+    private String groupName;
+
+    @Column(name = "description")
+    private String description;
+
+    @Column(name = "created_date", nullable = false, updatable = false)
+    private LocalDateTime createdDate;
+
+    @Column(name = "last_updated")
+    private LocalDateTime lastUpdated;
+
+    @Column(name = "is_active", nullable = false)
+    private Boolean isActive;
+
+    @Column(name = "created_by", nullable = false)
+    private String createdBy;
+}
+
+
+
+package com.example.dto;
+
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+
+import java.time.LocalDateTime;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class GroupDto {
+
+    private int groupId;
+    private String groupName;
+    private String description;
+    private LocalDateTime createdDate;
+    private LocalDateTime lastUpdated;
+    private Boolean isActive;
+    private String createdBy;
+}
+
+package com.example.repository;
+
+import com.example.entity.Group;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
+
+@Repository
+public interface GroupRepository extends JpaRepository<Group, int> {
+
+    Optional<Group> findByGroupName(String groupName);
+}
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class GroupService {
+
+    private final GroupRepository groupRepository;
+
+    public String addGroup(GroupDto groupDto) {
+        log.info("Attempting to add group with name: {}", groupDto.getGroupName());
+
+        Optional<Group> activeGroup = groupRepository.findByGroupNameAndIsActive(groupDto.getGroupName(), true);
+        if (activeGroup.isPresent()) {
+            log.warn("Group '{}' is already active.", groupDto.getGroupName());
+            return "Group is already present and active.";
+        }
+
+        Optional<Group> inactiveGroup = groupRepository.findByGroupNameAndIsActive(groupDto.getGroupName(), false);
+        if (inactiveGroup.isPresent()) {
+		    Group groupToUpdate = inactiveGroup.get();
+            groupToUpdate.setDescription(groupDto.getDescription());
+			groupToUpdate.setIsActive(true);
+			groupToUpdate.setCreatedBy(groupDto.getCreatedBy());
+			groupToUpdate.setLastUpdated(LocalDateTime.now());
+			groupRepository.save(groupToUpdate);
+			
+			log.info("Inactive group '{}' successfully activated and updated.", groupDto.getGroupName());
+			return "Group successfully activated and updated.";
+        }
+
+        Group newGroup = new Group();
+        newGroup.setGroupName(groupDto.getGroupName());
+        newGroup.setDescription(groupDto.getDescription());
+        newGroup.setCreatedDate(LocalDateTime.now());
+        newGroup.setLastUpdated(null);
+        newGroup.setIsActive(groupDto.getIsActive());
+        newGroup.setCreatedBy(groupDto.getCreatedBy());
+
+        groupRepository.save(newGroup);
+
+        log.info("Group '{}' successfully added.", groupDto.getGroupName());
+        return "Group successfully added.";
+    }
+}
+
+public String updateGroup(GroupDto groupDto) {
+    log.info("Attempting to update group with ID: {}", groupDto.getGroupId());
+
+    String responseMessage;
+
+    Optional<Group> optionalGroup = groupRepository.findById(groupDto.getGroupId());
+
+	if (optionalGroup.isPresent()) {
+		Group existingGroup = optionalGroup.get(); 
+        existingGroup.setGroupName(groupDto.getGroupName());
+        existingGroup.setDescription(groupDto.getDescription());
+        existingGroup.setIsActive(groupDto.getIsActive());
+        existingGroup.setLastUpdated(LocalDateTime.now());
+
+        groupRepository.save(existingGroup);
+
+        log.info("Group with ID '{}' successfully updated.", groupDto.getGroupId());
+        responseMessage = "Group successfully updated.";
+    } else {
+        log.error("Group with ID '{}' not found.", groupDto.getGroupId());
+        responseMessage = "Group not found.";
+    }
+
+    return responseMessage;
+}
+
+import org.springframework.beans.BeanUtils;
+
+public List<GroupDto> findAllGroups() {
+    log.info("Fetching all groups from the database.");
+   
+    List<Group> groups = groupRepository.findAll();
+
+    List<GroupDto> groupDtos = groups.stream().map(group -> {
+        GroupDto groupDto = new GroupDto();
+        BeanUtils.copyProperties(group, groupDto);
+        return groupDto;
+    }).collect(Collectors.toList());
+
+    log.info("Successfully fetched and mapped {} groups.", groupDtos.size());
+    return groupDtos;
+}
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+public class GroupController {
+
+    @Autowired
+    private GroupService groupService;
+	
+    @PostMapping("/add")
+    public ResponseEntity<String> addGroup(@RequestBody GroupDto groupDto) {
+        String response = groupService.addGroup(groupDto);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<String> updateGroup(@RequestBody GroupDto groupDto) {
+        String response = groupService.updateGroup(groupDto);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<GroupDto>> findAllGroups() {
+        List<GroupDto> groupDtos = groupService.findAllGroups();
+        return ResponseEntity.ok(groupDtos);
+    }
+}
+
+
+
+############################################################################################################
+############################################################################################################
+
+import javax.persistence.*;
+import java.time.LocalDateTime;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Data
+@NoArgsConstructor
+public class UserGroup {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+    
+    private int groupId;
+    
+    private String emailId;
+    
+    private String addedBy;
+    
+    private LocalDateTime addedDate;
+    
+    private LocalDateTime removedDate;
+    
+    private boolean isActive;
+}
+
+import java.time.LocalDateTime;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+public class UserGroupDTO {
+    
+    private int id;
+    
+    private int groupId;
+    
+    private String emailId;
+    
+    private String addedBy;
+    
+    private LocalDateTime addedDate;
+    
+    private LocalDateTime removedDate;
+    
+    private boolean isActive;
+	
+	private List<String> userGroupMappingList;
+}
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.Optional;
+
+public interface UserGroupRepository extends JpaRepository<UserGroup, int> {
+    Optional<UserGroup> findById(int id);
+}
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+@Service
+public class UserGroupService {
+
+    private static final Logger logger = LoggerFactory.getLogger(UserGroupService.class);
+
+    @Autowired
+    private UserGroupRepository userGroupRepository;
+
+    public String addGroupUser(UserGroupDTO userGroupDTO) {
+        logger.info("Received request to add group user: {}", userGroupDTO);
+
+        UserGroup existingUserGroup = userGroupRepository.findById(userGroupDTO.getId()).orElse(null);
+        
+        if (existingUserGroup != null) {
+            // Check if groupId and emailId match and the active flag is true
+            if (existingUserGroup.getGroupId().equals(userGroupDTO.getGroupId()) &&
+                existingUserGroup.getEmailId().equals(userGroupDTO.getEmailId()) &&
+                existingUserGroup.isActive()) {
+                logger.info("Mapping already exists for groupId: {} and emailId: {} with active status.", 
+                            userGroupDTO.getGroupId(), userGroupDTO.getEmailId());
+                return "Mapping already exists";
+            }
+            if (existingUserGroup.getGroupId().equals(userGroupDTO.getGroupId()) &&
+                existingUserGroup.getEmailId().equals(userGroupDTO.getEmailId()) &&
+                !existingUserGroup.isActive()) {
+                existingUserGroup.setAddedBy(userGroupDTO.getAddedBy());
+                existingUserGroup.setAddedDate(userGroupDTO.getAddedDate());
+                existingUserGroup.setRemovedDate(userGroupDTO.getRemovedDate());
+                existingUserGroup.setActive(true);
+                userGroupRepository.save(existingUserGroup);
+                logger.info("User group mapping updated in DB for groupId: {} and emailId: {}", 
+                            userGroupDTO.getGroupId(), userGroupDTO.getEmailId());
+                return "User group mapping saved in DB";
+            }
+        }
+        
+        UserGroup newUserGroup = new UserGroup();
+        newUserGroup.setGroupId(userGroupDTO.getGroupId());
+        newUserGroup.setEmailId(userGroupDTO.getEmailId());
+        newUserGroup.setAddedBy(userGroupDTO.getAddedBy());
+        newUserGroup.setAddedDate(userGroupDTO.getAddedDate());
+        newUserGroup.setRemovedDate(userGroupDTO.getRemovedDate());
+        newUserGroup.setActive(true);
+        
+        userGroupRepository.save(newUserGroup);
+        logger.info("New user group mapping saved in DB for groupId: {} and emailId: {}", 
+                    userGroupDTO.getGroupId(), userGroupDTO.getEmailId());
+        
+        return "User group mapping saved in DB";
+    }
+}
+
+    public String updateGroupUser(int id, UserGroupDTO userGroupDTO) {
+        logger.info("Received request to update user group with id: {}", id);
+
+        UserGroup existingUserGroup = userGroupRepository.findById(id).orElse(null);
+        existingUserGroup.setGroupId(userGroupDTO.getGroupId());
+        existingUserGroup.setEmailId(userGroupDTO.getEmailId());
+        existingUserGroup.setAddedBy(userGroupDTO.getAddedBy());
+        existingUserGroup.setAddedDate(userGroupDTO.getAddedDate());
+        existingUserGroup.setRemovedDate(userGroupDTO.getRemovedDate());
+        existingUserGroup.setActive(userGroupDTO.isActive());
+        userGroupRepository.save(existingUserGroup);
+
+        logger.info("User group with id: {} updated successfully", id);
+        return "Details updated successfully";
+    }
+	
+	 public List<UserGroupDTO> getUserGroupMappings() {
+        List<UserGroup> userGroups = userGroupRepository.findAll();
+
+        Map<int, List<String>> groupEmailMapping = userGroups.stream()
+                .filter(UserGroup::isActive) // Only include active records
+                .collect(Collectors.groupingBy(
+                        UserGroup::getGroupId,
+                        Collectors.mapping(UserGroup::getEmailId, Collectors.toList())
+                ));
+
+        List<UserGroupDTO> userGroupMappingList = groupEmailMapping.entrySet().stream()
+                .map(entry -> new UserGroupDTO(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
+		
+		return userGroupMappingList;
+    }
+	
+    @GetMapping("/mappings")
+    public ResponseEntity<UserGroupMappingListResponse> getUserGroupMappings() {
+        UserGroupMappingListResponse response = userGroupService.getUserGroupMappings();
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/add")
+    public ResponseEntity<String> addGroupUser(@RequestBody UserGroupDTO userGroupDTO) {
+        String responseMessage = userGroupService.addGroupUser(userGroupDTO);
+        return ResponseEntity.ok(responseMessage);
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<String> updateGroupUser(@PathVariable Long id, @RequestBody UserGroupDTO userGroupDTO) {
+        String responseMessage = userGroupService.updateGroupUser(id, userGroupDTO);
+        return ResponseEntity.ok(responseMessage);
+    }
+	
+[
+	{
+		"groupId": 1,
+		"mappedEmailId": [
+			"email1@example.com",
+			"email2@example.com",
+			"email3@example.com"
+		]
+	},
+	{
+		"groupId": 2,
+		"mappedEmailId": [
+			"email4@example.com",
+			"email5@example.com"
+		]
+	},
+	{
+		"groupId": 3,
+		"mappedEmailId": [
+			"email6@example.com"
+		]
+	}
+]
+
+##########################################################################################################
+##########################################################################################################
+
+CREATE SEQUENCE group_id_seq
+START WITH 1
+INCREMENT BY 1
+NOCACHE;
+
+CREATE TABLE groups (
+    group_id NUMBER PRIMARY KEY,
+    group_name VARCHAR2(100),
+    description VARCHAR2(250),
+    created_date TIMESTAMP,
+    last_updated TIMESTAMP,
+    is_active char(1),
+    created_by NUMBER NOT NULL
+);
+
+CREATE SEQUENCE member_id_seq
+START WITH 1
+INCREMENT BY 1
+NOCACHE;
+
+CREATE TABLE group_members (
+    id NUMBER PRIMARY KEY,
+    group_id NUMBER,
+    email_id VARCHAR2(50),
+    added_by NUMBER,
+    added_date TIMESTAMP,
+    removed_date TIMESTAMP,
+    is_active char(1),
+	CONSTRAINT fk_group FOREIGN KEY (group_id) REFERENCES groups(group_id)
+);
