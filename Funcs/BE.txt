@@ -337,21 +337,38 @@ public class UserGroupService {
         return "Details updated successfully";
     }
 	
-	 public List<UserGroupDTO> getUserGroupMappings() {
-        List<UserGroup> userGroups = userGroupRepository.findAll();
+	public List<TestEmailListDTO> getUserGroupMappings() {
+        List<TestEmailList> userGroups = testEmailRepo.findAll();
+        List<TestGroup> groupDetailsList = testGroupRepo.findAll();
 
-        Map<int, List<String>> groupEmailMapping = userGroups.stream()
-                .filter(UserGroup::isActive) // Only include active records
+        Map<Integer, String> groupIdToNameMap = groupDetailsList.stream()
+                .collect(Collectors.toMap(TestGroup::getGroupId, TestGroup::getGroupName));
+
+
+        Map<Integer, List<String>> groupEmailMapping = userGroups.stream()
+                .filter(TestEmailList::isActive)
                 .collect(Collectors.groupingBy(
-                        UserGroup::getGroupId,
-                        Collectors.mapping(UserGroup::getEmailId, Collectors.toList())
+                        TestEmailList::getGroupId,
+                        Collectors.mapping(TestEmailList::getEmailId, Collectors.toList())
                 ));
 
-        List<UserGroupDTO> userGroupMappingList = groupEmailMapping.entrySet().stream()
-                .map(entry -> new UserGroupDTO(entry.getKey(), entry.getValue()))
+        return groupEmailMapping.entrySet().stream()
+                .map(entry ->  {
+                    String groupName = groupIdToNameMap.get(entry.getKey());
+                    return new TestEmailListDTO(entry.getKey(), groupName, entry.getValue());
+                })
                 .collect(Collectors.toList());
-		
-		return userGroupMappingList;
+
+//        Map<Integer, List<TestEmailList>> groupEmailMapping = userGroups.stream().filter(TestEmailList::isActive).collect(Collectors.groupingBy(TestEmailList::getGroupId));
+//
+//        return groupEmailMapping.entrySet().stream().map(entry -> {
+//            int groupId = entry.getKey();
+//            String groupName = groupIdToNameMap.get(groupId);
+//            List<TestEmailList> userGroupList = entry.getValue();
+//            List<String> emailIds = userGroupList.stream().map(TestEmailList::getEmailId).collect(Collectors.toList());
+//            int id = userGroupList.get(0).getId();
+//            return new TestEmailListDTO(id, groupId, groupName, emailIds);
+//        }).collect(Collectors.toList());
     }
 	
     @GetMapping("/mappings")
@@ -372,29 +389,22 @@ public class UserGroupService {
         return ResponseEntity.ok(responseMessage);
     }
 	
-[
-	{
-		"groupId": 1,
-		"mappedEmailId": [
-			"email1@example.com",
-			"email2@example.com",
-			"email3@example.com"
-		]
-	},
-	{
-		"groupId": 2,
-		"mappedEmailId": [
-			"email4@example.com",
-			"email5@example.com"
-		]
-	},
-	{
-		"groupId": 3,
-		"mappedEmailId": [
-			"email6@example.com"
-		]
-	}
-]
+    public List<UserGroupDTO> getAllUserGroupDetails() {
+        List<UserGroup> userGroups = userGroupRepository.findAll();
+
+        // Convert each entity to DTO
+        return userGroups.stream()
+                .map(userGroup -> new UserGroupDTO(
+                        userGroup.getId(),
+                        userGroup.getGroupId(),
+                        userGroup.getEmailId(),
+                        userGroup.getAddedBy(),
+                        userGroup.getAddedDate(),
+                        userGroup.getRemovedDate(),
+                        userGroup.isActive()
+                ))
+                .collect(Collectors.toList());
+    }
 
 ##########################################################################################################
 ##########################################################################################################

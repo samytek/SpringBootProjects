@@ -1,0 +1,119 @@
+[
+	{
+		"id": 1,
+		"groupId": 1,
+		"groupName": "Complaince",
+		"userGroupMappingList": [
+			"email1@example.com",
+			"email4@example.com",
+			"email2@example.com",
+			"email3@example.com"
+		]
+	},
+	{
+		"id": 5,
+		"groupId": 2,
+		"groupName": "AV",
+		"userGroupMappingList": [
+			"email5@example.com",
+			"email6@example.com",
+			"email7@example.com"
+		]
+	},
+	{
+		"id": 8,
+		"groupId": 3,
+		"groupName": "Admin",
+		"userGroupMappingList": [
+			"email5@example.com",
+			"email5@example.com"
+		]
+	},
+	{
+		"id": 10,
+		"groupId": 4,
+		"groupName": "OPS",
+		"userGroupMappingList": [
+			"email5@example.com",
+			"email6@example.com"
+		]
+	},
+	{
+		"id": 12,
+		"groupId": 5,
+		"groupName": "Maker",
+		"userGroupMappingList": [
+			"email6@example.com",
+			"email7@example.com"
+		]
+	},
+	{
+		"id": 14,
+		"groupId": 6,
+		"groupName": "Inititor",
+		"userGroupMappingList": [
+			"email7@example.com",
+			"email8@example.com"
+		]
+	}
+]
+
+[
+	{
+		"id": 0,
+		"groupId": 1,
+		"groupName": "Complaince",
+		"userGroupMappingList": [
+			"email1@example.com",
+			"email4@example.com",
+			"email2@example.com",
+			"email3@example.com"
+		]
+	},
+	{
+		"id": 0,
+		"groupId": 2,
+		"groupName": "AV",
+		"userGroupMappingList": [
+			"email5@example.com",
+			"email6@example.com",
+			"email7@example.com"
+		]
+	},
+	{
+		"id": 0,
+		"groupId": 3,
+		"groupName": "Admin",
+		"userGroupMappingList": [
+			"email5@example.com",
+			"email5@example.com"
+		]
+	},
+	{
+		"id": 0,
+		"groupId": 4,
+		"groupName": "OPS",
+		"userGroupMappingList": [
+			"email5@example.com",
+			"email6@example.com"
+		]
+	},
+	{
+		"id": 0,
+		"groupId": 5,
+		"groupName": "Maker",
+		"userGroupMappingList": [
+			"email6@example.com",
+			"email7@example.com"
+		]
+	},
+	{
+		"id": 0,
+		"groupId": 6,
+		"groupName": "Inititor",
+		"userGroupMappingList": [
+			"email7@example.com",
+			"email8@example.com"
+		]
+	}
+]

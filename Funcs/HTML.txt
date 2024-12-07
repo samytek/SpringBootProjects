@@ -17,5 +17,6 @@
 
   onEmailChange() {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@labcorp\.com$/;
+	const emailRegex = /^[a-zA-Z0-9.]+@labcorp\.com$/;
     this.isInvalidEmail = !emailRegex.test(this.emailId);
   }
