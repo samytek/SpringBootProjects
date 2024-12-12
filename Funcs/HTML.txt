@@ -20,3 +20,17 @@
 	const emailRegex = /^[a-zA-Z0-9.]+@labcorp\.com$/;
     this.isInvalidEmail = !emailRegex.test(this.emailId);
   }
+
+  getStateSearchDetails(val) {
+    var searchText = val.trim();
+    this.masterDataList = $.map(this.originalStateDetails, function (val, key) {
+      if (val.bankName.toLowerCase().includes(searchText.toLowerCase()) ||
+        val.branchCode.toLowerCase().includes(searchText.toLowerCase()) ||
+        val.branchName.toLowerCase().includes(searchText.toLowerCase()) ||
+        val.ifsc.toLowerCase().includes(searchText.toLowerCase())
+      ) {
+        return val;
+      }
+    });
+    this.search();
+  }
