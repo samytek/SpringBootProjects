@@ -439,3 +439,7 @@ CREATE TABLE group_members (
     is_active char(1),
 	CONSTRAINT fk_group FOREIGN KEY (group_id) REFERENCES groups(group_id)
 );
+
+
+Right now, I do have two separate entities. One was group creation and second was user group mapping. In group creation entity, I used to create the groups. And in group mapping entity, I used to map multiple users to a single group. And for both of them, I was having different repositories, different services, and different controllers. But now, I have to make the changes in the code. I have to do the modification. And I have to use one-to-many mapping of Hibernate. So, basically, my one group can be mapped to multiple users. So, if I give you the code, can you do that for me? Can you do the mapping for both the entities? And can you modify the service layer code and the controller layer code as well?
+
