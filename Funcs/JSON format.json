@@ -117,3 +117,5 @@
 		]
 	}
 ]
+@Query("SELECT e FROM YourEntity e WHERE e.id IN " +
+       "(SELECT MIN(e2.id) FROM YourEntity e2 GROUP BY e2.groupname)")
